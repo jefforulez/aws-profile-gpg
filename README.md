@@ -23,40 +23,24 @@ This guide assumes you are familiar GPG and are able to encrypt your credentials
 
 ## Install
 
-#### Using Homebrew ####
+#### Using Homebrew
 
 ```
-brew tap firstlookmedia/firstlookmediaa
+brew bundle
+```
+
+or
+
+```
+brew tap firstlookmedia/firstlookmedia
 brew install aws-profile-gpg
 ```
 
-#### Bash Shortcuts
-
-Creating shell functions is helpful for quickly invoking different profiles:
+#### Using PyPI
 
 ```
-$ cat ~/.bash_profile
-
-# optional
-export AWS_ENCRYPTED_CREDENTIALS_FILE="${HOME}/Dropbox/aws/credentials.gpg"
-export AWS_CONFIG_FILE="${HOME}/Dropbox/aws/config"
-
-function aws-leet {
-  AWS_PROFILE=iam_leet \
-  aws-profile-gpg \
-  aws \
-  $@
-}
-
-function aws-terraform {
-  AWS_PROFILE=terraform \
-  aws-profile-gpg \
-  aws \
-  $@
-}
-
+pip install aws-profile-gpg
 ```
-
 
 ## Usage
 
@@ -115,28 +99,7 @@ AWS_PROFILE=terraform \
   aws-profile-gpg terraform -plan
 ```
 
-
-#### Note on Config Files
-
-The `AWS_PROFILE` you use must be defined in your `AWS_CONFIG_FILE` file, e.g.
-
-```
-$ cat ~/.aws/config
-
-[profile default]
-region=us-east-1
-
-[profile iam_leet]
-region=us-east-1
-```
-
-This applies to the `default` profile too.
-
-If you try to use an undefined profile, you will see this error:
-`Profile not found in config; profile=iam_leet`
-
-
-#### Environmental Variables
+## Environmental Variables
 
 * AWS_PROFILE_GPG_HOME
     * Path to `aws-profile-gpg` directory; Used to locate virtualenv and python script
@@ -157,6 +120,75 @@ If you try to use an undefined profile, you will see this error:
     * Defaults to `default`
 
 
+## Notes
+
+#### Creating Bash Shortcuts
+
+Creating bash functions is helpful for quickly invoking different profiles:
+
+```
+$ vim ~/.bash_profile
+
+# optional
+export AWS_ENCRYPTED_CREDENTIALS_FILE="${HOME}/Dropbox/aws/credentials.gpg"
+export AWS_CONFIG_FILE="${HOME}/Dropbox/aws/config"
+
+function aws-leet {
+  AWS_PROFILE=iam_leet \
+  aws-profile-gpg \
+  aws \
+  $@
+}
+
+function aws-terraform {
+  AWS_PROFILE=terraform \
+  aws-profile-gpg \
+  aws \
+  $@
+}
+
+```
+
+You can then run:
+
+```
+$ source ~/.bash_profile
+```
+
+```
+$ aws-leet iam get-user
+{
+  "User": {
+    "Path": "/",
+    "UserName": "iam.leet",
+    "UserId": "AID35DF67GHFEK3",
+    "Arn": "arn:aws:iam::737415635305:user/iam.leet",
+    "CreateDate": "1970-01-01T00:00:00Z",
+    "PasswordLastUsed": "2000-01-01T00:00:01Z"
+  }
+}
+```
+
+
+#### Specifying Profiles in Config Files
+
+The `AWS_PROFILE` you use must be defined in your `AWS_CONFIG_FILE` file, e.g.
+
+```
+$ cat ~/.aws/config
+
+[profile default]
+region=us-east-1
+
+[profile iam_leet]
+region=us-east-1
+```
+
+This applies to the `default` profile too.
+
+If you try to use an undefined profile, you will see this error:
+`Profile not found in config; profile=iam_leet`
+
 
 ## Related Links
 
@@ -172,3 +204,4 @@ If you try to use an undefined profile, you will see this error:
 
 * Botocore
     * [https://github.com/boto/botocore](https://github.com/boto/botocore)
+
